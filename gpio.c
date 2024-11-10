@@ -33,31 +33,32 @@ void configure_ports(void)
     PINSEL_CFG_Type pin_cfg; /* Create a variable to store the configuration of the pin */
 
     /* Configure the pin P0.0 as GPIO */
-    led_pin_cfg.Portnum = PINSEL_PORT_0;           /* The port number is 0 */
-    led_pin_cfg.Pinnum = PINSEL_PIN_0;            /* The pin number is 0 */
-    led_pin_cfg.Funcnum = PINSEL_FUNC_0;           /* The function number is 0 */
-    led_pin_cfg.Pinmode = PINSEL_PINMODE_PULLUP;   /* The pin mode is pull-up */
-    led_pin_cfg.OpenDrain = PINSEL_PINMODE_NORMAL; /* The pin is in the normal mode */
+    pin_cfg.Portnum = PINSEL_PORT_0;           /* The port number is 0 */
+    pin_cfg.Pinnum = PINSEL_PIN_0;            /* The pin number is 0 */
+    pin_cfg.Funcnum = PINSEL_FUNC_0;           /* The function number is 0 */
+    pin_cfg.Pinmode = PINSEL_PINMODE_PULLUP;   /* The pin mode is pull-up */
+    pin_cfg.OpenDrain = PINSEL_PINMODE_NORMAL; /* The pin is in the normal mode */
     PINSEL_ConfigPin(&pin_cfg);
 
     /* Configure the pin P0.1 as GPIO */
-    led_pin_cfg.Pinnum = PINSEL_PIN_1;            /* The pin number is 0 */
+    pin_cfg.Pinnum = PINSEL_PIN_1;            /* The pin number is 0 */
+    PINSEL_ConfigPin(&pin_cfg);
+
+    /* Configure the pin P0.26 as DAC */
+    pin_cfg.Pinnum = PINSEL_PIN_26;            /* The pin number is 26 */
+    pin_cfg.Funcnum = PINSEL_FUNC_2;           /* The function number is 2 */
+    pin_cfg.Pinmode = PINSEL_PINMODE_TRISTATE;   /* The pin mode is nor pull-up or pull-down */
     PINSEL_ConfigPin(&pin_cfg);
      
     /* Configure the pin P2.10 as EINT0 */
-    led_pin_cfg.Portnum = PINSEL_PORT_2;           /* The port number is 2 */
-    led_pin_cfg.Pinnum = PINSEL_PIN_10;            /* The pin number is 10 */
-    led_pin_cfg.Funcnum = PINSEL_FUNC_1;           /* The function number is 1 */
-    led_pin_cfg.Pinmode = PINSEL_PINMODE_PULLUP;   /* The pin mode is pull-up */
-    led_pin_cfg.OpenDrain = PINSEL_PINMODE_NORMAL; /* The pin is in the normal mode */
+    pin_cfg.Portnum = PINSEL_PORT_2;           /* The port number is 2 */
+    pin_cfg.Pinnum = PINSEL_PIN_10;            /* The pin number is 10 */
+    pin_cfg.Funcnum = PINSEL_FUNC_1;           /* The function number is 1 */
+    pin_cfg.Pinmode = PINSEL_PINMODE_PULLUP;   /* The pin mode is pull-up */
     PINSEL_ConfigPin(&pin_cfg);
 
     /* Configure the pin P2.10 as EINT1 */
-    led_pin_cfg.Portnum = PINSEL_PORT_2;           /* The port number is 2 */
-    led_pin_cfg.Pinnum = PINSEL_PIN_11;            /* The pin number is 11 */
-    led_pin_cfg.Funcnum = PINSEL_FUNC_1;           /* The function number is 1 */
-    led_pin_cfg.Pinmode = PINSEL_PINMODE_PULLUP;   /* The pin mode is pull-up */
-    led_pin_cfg.OpenDrain = PINSEL_PINMODE_NORMAL; /* The pin is in the normal mode */
+    pin_cfg.Pinnum = PINSEL_PIN_11;            /* The pin number is 11 */
     PINSEL_ConfigPin(&pin_cfg);
 
     /* Set the pins as P.0 and P0.1 as outputs */
