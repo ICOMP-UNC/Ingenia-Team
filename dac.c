@@ -8,8 +8,8 @@
 #include "lpc17xx_dac.h"
 
 // Definitions
-#define NUM_SAMPLES      60 // Total number of samples for the full sine wave
-#define WAVE_FREQUENCY   60 // Sine wave frequency: 60 Hz
+#define NUM_SAMPLES      60 // Total number of samples for the triangular wave
+#define WAVE_FREQUENCY   60 // Triangular wave frequency: 60 Hz
 #define CLOCK_DAC_MHZ    25 // DAC clock: 25 MHz (CCLK divided by 4)
 #define TRUE             1
 
@@ -21,8 +21,7 @@
 void setup_dac(void);
 
 /**
- * @brief Create a full sine wave table for the DAC using 60 samples.
- * The sine wave values are computed based on the 0-90 degree values from the sine_lookup table.
+ * @brief Create a triangular wave table for the DAC using 60 samples.
  * @param table Pointer to the DAC waveform table
  * @param num_samples Number of samples in the waveform
  */
