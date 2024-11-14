@@ -24,6 +24,10 @@
 #define TRUE  1
 #define FALSE 0
 
+/* Edge States Definitions */
+#define RISING_EDGE 0
+#define FALLING_EDGE 1
+
 /**
  * @brief Initialize the GPIO peripheral
  *
@@ -57,12 +61,17 @@ void configure_ports(void)
     pin_cfg.Pinmode = PINSEL_PINMODE_PULLUP;   /* The pin mode is pull-up */
     PINSEL_ConfigPin(&pin_cfg);
 
-    /* Configure the pin P2.10 as EINT1 */
+    /* Configure the pin P2.11 as GPIO */
     pin_cfg.Pinnum = PINSEL_PIN_11;            /* The pin number is 11 */
+    pin_cfg.Funcnum = PINSEL_FUNC_0;           /* The function number is 1 */
+    pin_cfg.Pinmode = PINSEL_PINMODE_PULLUP;   /* The pin mode is pull-up */
     PINSEL_ConfigPin(&pin_cfg);
 
     /* Set the pins as P.0 and P0.1 as outputs */
     GPIO_SetDir(PINSEL_PORT_0, RED_LED_PIN | GREEN_LED_PIN, OUTPUT);  
+
+    /* Set the P2.11 as a GPIO Interruption pin */
+    GPIO_IntCmd(PINSEL_PORT_2, SCALE_PIN, FALLING_EDGE);
 }
 
 
