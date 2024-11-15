@@ -1,23 +1,26 @@
 /**
- * @file gdma.c
- * @brief Configuración de DMA para trabajar con ADC, DAC y UART en LPC1769.
+ * @file dgma.c
+ * @brief File to handle the DMA module, it works with the DAC module
+ * its goal is to output a triangular wave continiously via Linked Lists.
  */
-
 #include "LPC17xx.h"
 #include "lpc17xx_gpdma.h"
 #include "dac.h"
-#include "uart.h"
+#include "gdma.h"
 
 /* Definitions */
 #define DMA_BUFFER_SIZE 60  // Tamaño de buffer ajustado a la tabla de onda
+#define DMA_SIZE 60
 
 /* Global Variables */
 static uint32_t dac_waveform_table[DMA_BUFFER_SIZE]; /* Tabla de onda triangular para el DAC */
-static uint16_t adc_dma_buffer[DMA_BUFFER_SIZE];     /* Buffer para datos de ADC */
+void create_waveform_table(uint32_t* table, uint32_t num_samples);
+
+/* DMA linked list item for continuous transfer */
+GPDMA_LLI_Type DMA_LLI_Struct;
 
 /* Function declarations */
 void dma_setup(void);
-void transfer_adc_to_uart(uint8_t channel);
 
 /**
  * @brief Configura el DMA para transferencias de ADC a memoria y DAC.
@@ -27,46 +30,48 @@ void dma_setup(void)
     /* Inicializa la tabla de onda para el DAC */
     create_waveform_table(dac_waveform_table, DMA_BUFFER_SIZE);
 
+    // Set up the DMA linked list for continuous waveform transfer
+    DMA_LLI_Struct.SrcAddr = (uint32_t)dac_waveform_table;           // Source: DAC waveform table
+    DMA_LLI_Struct.DstAddr = (uint32_t) & (LPC_DAC->DACR);           // Destination: DAC register
+    DMA_LLI_Struct.NextLLI = (uint32_t)&DMA_LLI_Struct;              // Point to itself for continuous transfer
+    DMA_LLI_Struct.Control = (DMA_SIZE | (2 << 18)                    // Source width: 32-bit
+                             | (2 << 21)                              // Destination width: 32-bit
+                             | (1 << 26));                            // Increment source address
+
     /* Inicializa el controlador de DMA */
     GPDMA_Init();
 
-    /* Configura el DMA para transferencia de onda triangular al DAC */
+    /* Configura el DMA para transferencia continua de onda triangular al DAC */
     GPDMA_Channel_CFG_Type dma_dac_config;
     dma_dac_config.ChannelNum = 1;
-    dma_dac_config.SrcMemAddr = (uint32_t)dac_waveform_table;
-    dma_dac_config.DstMemAddr = 0;
-    dma_dac_config.TransferSize = DMA_BUFFER_SIZE;
-    dma_dac_config.TransferWidth = 0;
-    dma_dac_config.TransferType = GPDMA_TRANSFERTYPE_M2P;
-    dma_dac_config.SrcConn = 0;
-    dma_dac_config.DstConn = GPDMA_CONN_DAC;
-    dma_dac_config.DMALLI = 0;
+    dma_dac_config.SrcMemAddr = (uint32_t)dac_waveform_table; // Dirección de la tabla de onda
+    dma_dac_config.DstMemAddr = 0;                            // Dirección del DAC
+    dma_dac_config.TransferSize = DMA_BUFFER_SIZE;            // Número de datos a transferir
+    dma_dac_config.TransferWidth = 0;                          // Tamaño de los datos (32 bits)
+    dma_dac_config.TransferType = GPDMA_TRANSFERTYPE_M2P;     // Transferencia de memoria a periférico
+    dma_dac_config.SrcConn = 0;                                // Conexión fuente (memoria)
+    dma_dac_config.DstConn = GPDMA_CONN_DAC;                   // Conexión destino (DAC)
+    dma_dac_config.DMALLI = (uint32_t)&DMA_LLI_Struct;         // Enlaza con la lista vinculada
 
     GPDMA_Setup(&dma_dac_config);
-    GPDMA_ChannelCmd(1, ENABLE);
-
-    /* Configura el DMA para transferencia desde el ADC canal 0 a memoria */
-    GPDMA_Channel_CFG_Type dma_adc_config;
-    dma_adc_config.ChannelNum = 0;
-    dma_adc_config.SrcMemAddr = 0;
-    dma_adc_config.DstMemAddr = (uint32_t)adc_dma_buffer;
-    dma_adc_config.TransferSize = DMA_BUFFER_SIZE;
-    dma_adc_config.TransferWidth = 0;
-    dma_adc_config.TransferType = GPDMA_TRANSFERTYPE_P2M;
-    dma_adc_config.SrcConn = GPDMA_CONN_ADC;
-    dma_adc_config.DstConn = 0;
-    dma_adc_config.DMALLI = 0;
-
-    GPDMA_Setup(&dma_adc_config);
-    GPDMA_ChannelCmd(0, ENABLE);
 }
 
 /**
- * @brief Transfiere datos del ADC al UART.
- * @param channel Canal de ADC para lectura y envío (0 o 1).
+ * @brief Crea una tabla de onda triangular.
+ * @param table Dirección de la tabla de onda.
+ * @param num_samples Número de muestras.
  */
-void transfer_adc_to_uart(uint8_t channel)
+void create_waveform_table(uint32_t* table, uint32_t num_samples)
 {
-    uint16_t data_to_send = adc_dma_buffer[channel];
-    uart_send(data_to_send);  // Envía el dato por UART
+    uint32_t i;
+    uint32_t peak_value = 1023;  // Valor máximo del DAC para 3.3V (10 bits)
+    uint32_t step = peak_value / (num_samples / 2);  // Tamaño del paso para cada muestra
+
+    // Llenar la tabla con valores para una onda triangular
+    for (i = 0; i < num_samples / 2; i++) {
+        table[i] = i * step;  // Parte ascendente de la onda
+    }
+    for (i = num_samples / 2; i < num_samples; i++) {
+        table[i] = peak_value - ((i - num_samples / 2) * step);  // Parte descendente de la onda
+    }
 }
