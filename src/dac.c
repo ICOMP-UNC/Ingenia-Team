@@ -1,4 +1,4 @@
-**
+/**
  * @file dac.c
  * @brief File to handle the DAC module
  */
