@@ -1,34 +1,46 @@
 /**
  * @file main.c
- * @brief Funcion principal de nuestro programa
- * Se encarga de adjuntar todos los diferentes modulos y llamar a sus funciones 
+ * @brief Main Function in our project
+ * Compiles all the different files and calls its functions to deliver the project.
  */
 
 #include "LPC17xx.h"
-#include "gpio.c"
-#include "dac.c"
-#include "adc.c"
-#include "interruptions.c"
-#include "gdma.c"
-#include "uart.c"
+#include "gpio.h"
+#include "systick.h"
+#include "timers.h"
+#include "uart.h"
+#include "dac.h"
+#include "adc.h"
+#include "interruptions.h"
+#include "gdma.h"
+#include "lpc17xx_gpdma.h"
 
 
 /**
- * @brief Funcion principal
+ * @brief Main Function
  */
 int main(void)
 {
-    SystemInit();                /* Initialize system clock */
-    configure_ports();            /* Configuro los puertos GPIO */
-    configure_adc();             /* Configuro el modulo ADC */
-    setup_dac();                 /* Configuro el modulo DAC */
-    dma_setup();                 /* Inicializo el modulo DMA */
-    uart_init();                 /* Inicializo el modulo UART */
+	SystemInit();                /* Initialize system clock */
+    configure_ports();            /* Configures GPIO ports */
+    configure_systick();			/* Configures the SysTick module */
+    configure_timer();				/* Configures the Timer module */
+    configure_external_interrupt(); /* Configures External Interrupt module */
+    setup_dac();                 /* Configures the DAC module */
+    dma_setup();                 /* Initializes the DMA module */
+    configure_adc();             /* Configures the ADC module */
+    uart_init();                 /* Initializes the UART module */
+
+    systick_enable();			/* Enables SysTick interrupts */
+
+
+    GPDMA_ChannelCmd(1, ENABLE);  /* Activates the DAC channel with DMA */
+
 
     while (1)
-    {
-        transfer_adc_to_uart(0);  // Envía datos del canal ADC predeterminado (0) por UART
-    }
+        {
+            transfer_adc_to_uart();  /* Sends ADC channel data via UART */
+        }
 
     return 0;
 }
