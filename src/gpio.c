@@ -84,17 +84,17 @@ void configure_ports(void)
     pin_cfg.Pinnum = PINSEL_PIN_0;            /* The pin number is 0 */
     PINSEL_ConfigPin(&pin_cfg);
 
-    /* Configure the pin P0.10 as TXD2 */
+    /* Configure the pin P2.8 as TXD2 */
     pin_cfg.Portnum = PINSEL_PORT_0;           /* The port number is 0 */
     pin_cfg.Pinnum = PINSEL_PIN_10;            /* The pin number is 10 */
     pin_cfg.Funcnum = PINSEL_FUNC_1;           /* The function number is 1 */
     PINSEL_ConfigPin(&pin_cfg);
 
-    /* Configure the pin P0.9 as RXD2 */
+    /* Configure the pin P2.9 as RXD2 */
     pin_cfg.Pinnum = PINSEL_PIN_9;            /* The pin number is 9 */
     PINSEL_ConfigPin(&pin_cfg);
 
-    /* Set the pins as P.0 and P0.1 as outputs */
+    /* Set the pins as outputs */
     GPIO_SetDir(PINSEL_PORT_1, RED_LED_PIN | GREEN_LED_PIN , OUTPUT);
     GPIO_SetDir(PINSEL_PORT_2, BUZZER_PIN, OUTPUT);
 
