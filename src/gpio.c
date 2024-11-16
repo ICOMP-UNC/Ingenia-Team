@@ -16,7 +16,7 @@
 #define TIMESCALE_PIN ((uint32_t)(1 << 11))  /* P2.11 connected to button */
 #define RED_LED_PIN ((uint32_t)(1 << 30))  /* P1.30 connected to Red LED */
 #define GREEN_LED_PIN ((uint32_t)(1 << 31))  /* P1.31 connected to Green LED */
-#define TXD2_PIN ((uint32_t)(1 << 10)) /* P2.8 connected to oscilloscope */
+#define TXD2_PIN ((uint32_t)(1 << 8)) /* P2.8 connected to oscilloscope */
 #define BUZZER_PIN ((uint32_t)(1 << 0)) /* P2.0 connected to an active buzzer */
 
 
