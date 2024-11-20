@@ -8,9 +8,6 @@
 #include "dac.h"
 
 // Definitions
-//#define NUM_SAMPLES      60   // Total number of samples for the triangular wave
-//#define WAVE_FREQUENCY   60   // Triangular wave frequency: 60 Hz
-//#define CLOCK_DAC_MHZ    25   // DAC clock: 25 MHz (CCLK divided by 4)
 #define TRUE             1
 
 // Function Prototypes
