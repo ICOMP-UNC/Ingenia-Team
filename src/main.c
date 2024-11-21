@@ -39,7 +39,7 @@ int main(void)
 
     while (1)
         {
-            transfer_adc_to_uart();  /* Sends ADC channel data via UART */
+            __WFI();  // Espera una interrupción (bajo consumo)
         }
 
     return 0;
