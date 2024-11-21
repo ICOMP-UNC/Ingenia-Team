@@ -50,10 +50,11 @@ void configure_timer(void)
 void TIMER2_IRQHandler(void)
 {
 	TIM_ClearIntPending(LPC_TIM2, TIM_MR0_INT);  // Clear the interrupt flag
-
-	// Turn on the buzzer connected to P2.0
-	GPIO_SetValue(PINSEL_PORT_2, BUZZER_PIN);
+  
+    	transfer_adc_to_uart();// Call the function to transfer ADC data to UART
+	
+	GPIO_SetValue(PINSEL_PORT_2, BUZZER_PIN);// Turn on the buzzer connected to P2.0
 	for(uint8_t i=0; i<200; i++);  // Small delay to keep buzzer on for a short period
-	// Turn off the buzzer
-	GPIO_ClearValue(PINSEL_PORT_2, BUZZER_PIN);
+	
+	GPIO_ClearValue(PINSEL_PORT_2, BUZZER_PIN);// Turn off the buzzer
 }
