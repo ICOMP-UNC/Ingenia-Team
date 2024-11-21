@@ -11,6 +11,8 @@
 /* Definitions */
 #define DMA_BUFFER_SIZE 60  // Tamaño de buffer ajustado a la tabla de onda
 #define DMA_SIZE 60
+const uint32_t PEAK_VALUE = 1023;  // Valor máximo del DAC para 3.3V (10 bits)
+uint32_t step;                     // Paso calculado dinámicamente según la tabla
 
 /* Global Variables */
 static uint32_t dac_waveform_table[DMA_BUFFER_SIZE]; /* Tabla de onda triangular para el DAC */
@@ -64,14 +66,12 @@ void dma_setup(void)
 void create_waveform_table(uint32_t* table, uint32_t num_samples)
 {
     uint32_t i;
-    uint32_t peak_value = 1023;  // Valor máximo del DAC para 3.3V (10 bits)
-    uint32_t step = peak_value / (num_samples / 2);  // Tamaño del paso para cada muestra
-
     // Llenar la tabla con valores para una onda triangular
     for (i = 0; i < num_samples / 2; i++) {
         table[i] = i * step;  // Parte ascendente de la onda
     }
     for (i = num_samples / 2; i < num_samples; i++) {
-        table[i] = peak_value - ((i - num_samples / 2) * step);  // Parte descendente de la onda
+        table[i] = PEAK_VALUE  - ((i - num_samples / 2) * step);  // Parte descendente de la onda
     }
+
 }
